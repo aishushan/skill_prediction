@@ -4,3 +4,4 @@ pip == 23.3.2
 nltk == 3.8.1
 pandas == 2.0.2
 sklearn == 0.0.post5
+pip == 23.3.2

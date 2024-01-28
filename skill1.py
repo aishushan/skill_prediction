@@ -2,17 +2,16 @@ import streamlit as st
 import pickle
 import re
 import nltk
+import numpy as np
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-import numpy as np  # Import numpy for array operations
-from sklearn.feature_extraction.text import CountVectorizer  # Import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 st.title("Resume Skill Classifier")
 
 with open('skillmodel.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
-
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -41,7 +40,7 @@ if st.button("Extract skills"):
             lemmatizer = WordNetLemmatizer()
             tokens = [lemmatizer.lemmatize(word) for word in tokens]
 
-            # Handling contractions (you may need a more comprehensive list)
+            # Handling contractions
             contractions = {
                 "n't": "not",
                 "'s": "is",
@@ -56,7 +55,7 @@ if st.button("Extract skills"):
             # Removing HTML tags
             tags_removed = re.sub(r'<.*?>', '', ' '.join(tokens))
 
-            # Joining tokens back into a list
+            # Joining tokens back into a sentence
             processed_text = ' '.join(tokens)
 
             return processed_text
@@ -75,9 +74,10 @@ if st.button("Extract skills"):
         def remove_duplicates(lst):
             return list(set(lst))
 
+        # Recreate the vectorizer
+        vectorizer = CountVectorizer()
+
         prep = preprocess_text(user_input)
-        
-        # Vectorize the preprocessed text using the same vectorizer
         prep_array = vectorizer.transform([prep])
         
         predictions = model.predict(prep_array)

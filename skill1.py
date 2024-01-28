@@ -92,4 +92,5 @@ if st.button("Extract skills"):
         result = remove_duplicates(predicted_skills.tolist())
 
         # Display output
-        st.write("Predicted Skills:", ', '.join(result))
+        st.write("Predicted Skills:", ', '.join(map(str, result)))
+

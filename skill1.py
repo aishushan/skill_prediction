@@ -8,8 +8,6 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from collections import OrderedDict
 from PyPDF2 import PdfReader
-import streamlit_cors
-streamlit_cors.enable_cors()
 
 
 # Load the saved model, vectorizer, and label encoder
@@ -106,10 +104,8 @@ if uploaded_file:
         st.write("Extracted Skills:")
         st.write(", ".join(extracted_skills))
 
-    except Exception as e:
-        st.error("Error processing PDF: {}".format(e))
-        if "403" in str(e):
-            st.error("File upload might be restricted. Check server configuration.")
+     except Exception as e:
+        st.error("Error processing PDF: {}".format(e)) 
 
         
 else:

@@ -1,6 +1,4 @@
 import streamlit as st
-import pickle
-import streamlit as st
 import pandas as pd
 import pickle
 from sklearn.feature_extraction.text import CountVectorizer
@@ -10,15 +8,15 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
-# Load the model and label encoder
+# Load the model, vectorizer, and label encoder
 with open('skillmodel.pkl', 'rb') as model_file:
   model = pickle.load(model_file)
-with open('label_encoder (1).pkl', 'rb') as label_encoder_file:
-  label_encoder = pickle.load(label_encoder_file)
 with open('vectorizer.pkl', 'rb') as vectorizer_file:
   vectorizer = pickle.load(vectorizer_file)
+with open('label_encoder (1).pkl', 'rb') as label_encoder_file:
+  label_encoder = pickle.load(label_encoder_file)
 
-# Preprocessing function (you can use your existing function here)
+# Preprocessing function (replace with your implementation)
 def preprocess_text(text):
   # ... (your preprocessing code)
   # Lowercasing
@@ -57,6 +55,16 @@ def preprocess_text(text):
   processed_text = ' '.join(tokens)
 
   return processed_text
+def extract_skills_from_text(preprocessed_text, label_encoder):
+    predicted_skills = label_encoder.inverse_transform([model.predict(vectorizer.transform([preprocessed_text]))[0]])
+
+    if len(predicted_skills) == 1:
+        skill_str = str(predicted_skills[0])
+    else:
+        skill_str = ', '.join(map(str, predicted_skills))
+
+    return skill_str
+
 st.title("Resume Skill Extractor")
 
 # User input: resume text
@@ -65,15 +73,6 @@ user_input = st.text_area("Paste your resume text here:")
 if st.button("Extract skills"):
   if user_input:
     preprocessed_text = preprocess_text(user_input)
+    predicted_skills = extract_skills_from_text(preprocessed_text, label_encoder)
 
-    # Predict skills using the model
-    predictions = model.predict(vectorizer.transform([preprocessed_text]))
-
-    # Convert indices to skill names using label_encoder
-    predicted_skills = label_encoder.inverse_transform(predictions)
-
-    # Display extracted skills as a list
-    st.write("Predicted Skills:")
-    for skill in predicted_skills:
-      st.write(f"- {skill}")
-
+    st.write("Predicted Skills:", predicted_skills)

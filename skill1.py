@@ -66,8 +66,8 @@ if st.button("Extract skills"):
         def extract_skills_from_text(preprocessed_text):
             prep_array = vectorizer.transform([preprocessed_text])
             predictions = model.predict(prep_array)
-            # Map class indices to skill labels
-            predicted_skills = label_encoder.inverse_transform(predictions)
+            # Convert numpy array to a list
+            predicted_skills = label_encoder.inverse_transform(predictions).tolist()
             return predicted_skills
 
         prep = preprocess_text(user_input)
@@ -75,5 +75,3 @@ if st.button("Extract skills"):
 
         # Display output
         st.write("Predicted Skills:", ', '.join(predicted_skills))
-
-# Rest of your code...

@@ -6,11 +6,16 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import numpy as np  # Import numpy for array operations
+from sklearn.feature_extraction.text import CountVectorizer  # Import CountVectorizer
 
 st.title("Resume Skill Classifier")
 
 with open('skillmodel.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
+
+# Load the vectorizer used during training
+with open('vectorizer.pkl', 'rb') as vectorizer_file:
+    vectorizer = pickle.load(vectorizer_file)
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -55,7 +60,7 @@ if st.button("Extract skills"):
             tags_removed = re.sub(r'<.*?>', '', ' '.join(tokens))
 
             # Joining tokens back into a list
-            processed_text = tokens
+            processed_text = ' '.join(tokens)
 
             return processed_text
 
@@ -74,9 +79,11 @@ if st.button("Extract skills"):
             return list(set(lst))
 
         prep = preprocess_text(user_input)
-        prep_array = np.array([' '.join(prep)])  # Convert the list to a 1D array
-        prep_array_2d = np.reshape(prep_array, (len(prep_array), 1))  # Reshape to 2D array
-        predictions = model.predict(prep_array_2d)
+        
+        # Vectorize the preprocessed text using the same vectorizer
+        prep_array = vectorizer.transform([prep])
+        
+        predictions = model.predict(prep_array)
         result = remove_duplicates(predictions.tolist())
         # Display output
         st.write("Predicted Skills:", result)

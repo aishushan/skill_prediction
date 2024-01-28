@@ -69,14 +69,15 @@ if st.button("Extract skills"):
             # Make predictions on the new data using the loaded model
             probabilities = model.predict_proba(prep_array)
             predicted_class = np.argmax(probabilities)
-            predicted_skill = f"Skill {predicted_class}"  # You can customize this based on your actual skill labels
-            return [predicted_skill]
+            predicted_skill = get_skills_from_class(predicted_class)  # Modify this function based on your actual skill labels
+            return predicted_skill
 
-        def remove_duplicates(lst):
-            return list(set(lst))
+        def get_skills_from_class(class_index):
+            # Assuming you have a list of skills in the same order as your class indices
+            skills = ['Python', 'C', 'Java', 'JavaScript', 'SQL', 'HTML', 'CSS', 'Data Science', 'Machine Learning']
+            return skills[class_index]
 
         prep = preprocess_text(user_input)
         predictions = extract_skills_from_text(prep, model, vectorizer)
-        result = remove_duplicates(predictions)
         # Display output
-        st.write("Predicted Skills:", ', '.join(result))
+        st.write("Predicted Skills:", predictions)

@@ -9,12 +9,15 @@ from nltk.stem import WordNetLemmatizer
 
 st.title("Resume Skill Classifier")
 
-# Load the model and vectorizer
+# Load the model, vectorizer, and LabelEncoder
 with open('skillmodel.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
 
 with open('vectorizer.pkl', 'rb') as vectorizer_file:
     vectorizer = pickle.load(vectorizer_file)
+
+with open('label_encoder.pkl', 'rb') as label_encoder_file:
+    label_encoder = pickle.load(label_encoder_file)
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -63,21 +66,19 @@ if st.button("Extract skills"):
 
             return processed_text
 
-        def extract_skills_from_text(preprocessed_text, model, vectorizer):
-            # Vectorize the preprocessed text using the loaded vectorizer
-            prep_array = vectorizer.transform([' '.join(preprocessed_text)])
-            # Make predictions on the new data using the loaded model
-            probabilities = model.predict_proba(prep_array)
-            predicted_class = np.argmax(probabilities)
-            predicted_skill = get_skills_from_class(predicted_class)  # Modify this function based on your actual skill labels
-            return predicted_skill
-
-        def get_skills_from_class(class_index):
-            # Assuming you have a list of skills in the same order as your class indices
-            skills = ['Python', 'C', 'Java', 'JavaScript', 'SQL', 'HTML', 'CSS', 'Data Science', 'Machine Learning']
-            return skills[class_index]
+        def remove_duplicates(lst):
+            return list(set(lst))
 
         prep = preprocess_text(user_input)
-        predictions = extract_skills_from_text(prep, model, vectorizer)
+        prep_array = np.array([' '.join(prep)])  # Convert the list to a 1D array
+        prep_vectorized = vectorizer.transform(prep_array)
+
+        # Make predictions on the new data
+        predictions = model.predict(prep_vectorized)
+
+        # Post-process predictions to extract predicted skills
+        predicted_skills = label_encoder.inverse_transform(predictions)
+        result = remove_duplicates(predicted_skills.tolist())
+
         # Display output
-        st.write("Predicted Skills:", predictions)
+        st.write("Predicted Skills:", ', '.join(result))

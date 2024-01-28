@@ -1,82 +1,64 @@
 import streamlit as st
 import pandas as pd
-import pickle
-from sklearn.feature_extraction.text import CountVectorizer
-import re
 import nltk
+import re
+import pickle
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from sklearn.feature_extraction.text import CountVectorizer
 
-# Load the model, vectorizer, and label encoder
+# Load the saved model, vectorizer, and label encoder
 with open('skillmodel.pkl', 'rb') as model_file:
-  model = pickle.load(model_file)
+    loaded_model = pickle.load(model_file)
+
 with open('vectorizer.pkl', 'rb') as vectorizer_file:
-  vectorizer = pickle.load(vectorizer_file)
-with open('label_encoder (1).pkl', 'rb') as label_encoder_file:
-  label_encoder = pickle.load(label_encoder_file)
+    loaded_vectorizer = pickle.load(vectorizer_file)
 
-# Preprocessing function (replace with your implementation)
+with open('label_encoder.pkl', 'rb') as label_encoder_file:
+    loaded_label_encoder = pickle.load(label_encoder_file)
+
+# Function to preprocess text
 def preprocess_text(text):
-  # ... (your preprocessing code)
-  # Lowercasing
-  text = text.lower()
+    text = text.lower()
+    text = re.sub(r'[^a-zA-Z\s]', '', text)
+    tokens = word_tokenize(text)
+    stop_words = set(stopwords.words('english'))
+    tokens = [word for word in tokens if word not in stop_words]
+    lemmatizer = WordNetLemmatizer()
+    tokens = [lemmatizer.lemmatize(word) for word in tokens]
+    contractions = {"n't": "not", "'s": "is", "'re": "are", "'m": "am", "'ll": "will", "'ve": "have", "'d": "would"}
+    tokens = [contractions.get(word, word) for word in tokens]
+    tags_removed = re.sub(r'<.*?>', '', ' '.join(tokens))
+    processed_text = ' '.join(tokens)
+    return processed_text
 
-  # Removing special characters and numbers
-  text = re.sub(r'[^a-zA-Z\s]', '', text)
+# Function to extract skills from preprocessed text
+def extract_skills_from_text(preprocessed_text):
+    X_new_data = loaded_vectorizer.transform([preprocessed_text])
+    predictions_new_data = loaded_model.predict(X_new_data)
+    predicted_skills = loaded_label_encoder.inverse_transform(predictions_new_data)
+    return predicted_skills[0] if predicted_skills else None
 
-  # Tokenization
-  tokens = word_tokenize(text)
+# Streamlit app
+def main():
+    st.title("Skill Extraction App")
 
-  # Removing stopwords
-  stop_words = set(stopwords.words('english'))
-  tokens = [word for word in tokens if word not in stop_words]
+    # User input for resume text
+    resume_text = st.text_area("Paste your resume here:")
 
-  # Lemmatization
-  lemmatizer = WordNetLemmatizer()
-  tokens = [lemmatizer.lemmatize(word) for word in tokens]
+    if st.button("Extract Skills"):
+        # Preprocess the input text
+        processed_resume = preprocess_text(resume_text)
 
-  # Handling contractions (you may need a more comprehensive list)
-  contractions = {
-      "n't": "not",
-      "'s": "is",
-      "'re": "are",
-      "'m": "am",
-      "'ll": "will",
-      "'ve": "have",
-      "'d": "would"
-  }
-  tokens = [contractions.get(word, word) for word in tokens]
+        # Extract skills
+        extracted_skills = extract_skills_from_text(processed_resume)
 
-  # Removing HTML tags
-  tags_removed = re.sub(r'<.*?>', '', ' '.join(tokens))
+        # Display extracted skills
+        if extracted_skills:
+            st.success(f"Extracted Skills: {extracted_skills}")
+        else:
+            st.warning("No skills extracted.")
 
-  # Joining tokens back into a sentence
-  processed_text = ' '.join(tokens)
-
-  return processed_text
-
-
-def extract_skills_from_text(preprocessed_text, label_encoder):
-    predicted_skills = label_encoder.inverse_transform([model.predict(vectorizer.transform([preprocessed_text]))[0]])
-
-    skill_list = []
-    for skill_index in predicted_skills:
-        skill_name = label_encoder.inverse_transform([skill_index])[0]
-        skill_list.append(str(skill_name))  # Convert to string
-
-    skill_str = ', '.join(skill_list)
-    return skill_str
-
-st.title("Resume Skill Extractor")
-
-# User input: resume text
-user_input = st.text_area("Paste your resume text here:")
-
-if st.button("Extract skills"):
-  if user_input:
-    preprocessed_text = preprocess_text(user_input)
-    predicted_skills = extract_skills_from_text(preprocessed_text, label_encoder)
-
-    st.write("Predicted Skills:", predicted_skills)
-
+if __name__ == "__main__":
+    main()

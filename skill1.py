@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Jan 28 14:30:09 2024
-
-@author: Lenovo
-"""
-
 import streamlit as st
 import pickle
 import re
@@ -12,24 +5,19 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from sklearn.naive_bayes import MultinomialNB
-
+import numpy as np  # Import numpy for array operations
 
 st.title("Resume Skill Classifier")
 
 with open('skillmodel.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
 
-
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
-
- 
 # User input: resume text
 user_input = st.text_area("Paste your resume text here:")
-
 
 if st.button("Extract skills"):
     if user_input:
@@ -66,11 +54,11 @@ if st.button("Extract skills"):
             # Removing HTML tags
             tags_removed = re.sub(r'<.*?>', '', ' '.join(tokens))
 
-            # Joining tokens back into a sentence
-            processed_text = ' '.join(tokens)
+            # Joining tokens back into a list
+            processed_text = tokens
 
             return processed_text
-        
+
         def extract_skills_from_text(preprocessed_text, skills_data):
             # Initialize an empty list to store extracted skills
             extracted_skills = []
@@ -81,22 +69,13 @@ if st.button("Extract skills"):
                     extracted_skills.append(skill)
 
             return extracted_skills
-        
-        def remove_duplicates(lst):
-            
-            unique_list = []
-            
-            for item in lst:
-              if item not in unique_list:
-                unique_list.append(item)
 
-            return unique_list
-            
+        def remove_duplicates(lst):
+            return list(set(lst))
+
         prep = preprocess_text(user_input)
-        predictions = model.predict(prep)
-        result = remove_duplicates(predictions)
+        prep_array = np.array([' '.join(prep)])  # Convert the list to a 1D array
+        predictions = model.predict(prep_array)
+        result = remove_duplicates(predictions.tolist())
         # Display output
         st.write("Predicted Skills:", result)
-
-    
-    

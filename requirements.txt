@@ -1,7 +1,6 @@
 streamlit==1.30.0
-pip==23.3.2
 pickle-mixin== 1.0.2
 nltk == 3.8.1
 pandas == 2.0.2
 sklearn == 0.0.post5
-scikit-learn== 1.4.0
+scikit-learn== 0.0.post5

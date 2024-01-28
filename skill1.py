@@ -78,7 +78,8 @@ st.title("Resume Skills Extractor")
 # Input text area for resume
 resume_text = st.text_area("Enter resume text:")
 
-if resume_text:
+# Button to trigger skill extraction
+if st.button("Extract Skills"):
     # Preprocess the text
     processed_text = preprocess_text(resume_text)
 

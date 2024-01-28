@@ -68,6 +68,8 @@ if st.button("Extract skills"):
             prep_array = vectorizer.transform([preprocessed_text])
             predictions = model.predict(prep_array)
             result = label_encoder.inverse_transform(predictions)
+            # Convert NumPy int64 to string
+            result = [str(skill) for skill in result]
             return result
 
         prep = preprocess_text(user_input)

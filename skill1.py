@@ -75,7 +75,8 @@ if st.button("Extract skills"):
 
         prep = preprocess_text(user_input)
         prep_array = np.array([' '.join(prep)])  # Convert the list to a 1D array
-        predictions = model.predict(prep_array)
+        prep_array_2d = np.reshape(prep_array, (len(prep_array), 1))  # Reshape to 2D array
+        predictions = model.predict(prep_array_2d)
         result = remove_duplicates(predictions.tolist())
         # Display output
         st.write("Predicted Skills:", result)

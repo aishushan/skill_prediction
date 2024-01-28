@@ -15,7 +15,7 @@ with open('vectorizer.pkl', 'rb') as vectorizer_file:
   vectorizer = pickle.load(vectorizer_file)
 
 # Load the label encoder
-with open('label_encoder.pkl', 'rb') as label_encoder_file:
+with open('label_encoder (1).pkl', 'rb') as label_encoder_file:
   label_encoder = pickle.load(label_encoder_file)
 
 st.title("Resume Skill Extractor")

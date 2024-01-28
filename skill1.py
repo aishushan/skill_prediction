@@ -102,9 +102,3 @@ if uploaded_file:
     st.write("Extracted Skills:")
     st.write(", ".join(extracted_skills))
 
-# Text area option (keep for alternative input)
-elif resume_text:
-    # ... (your existing code for processing and displaying skills from text area)
-
-else:
-    st.write("Please upload a PDF file or paste your resume text in the text area.")

@@ -55,14 +55,15 @@ def preprocess_text(text):
   processed_text = ' '.join(tokens)
 
   return processed_text
+
 def extract_skills_from_text(preprocessed_text, label_encoder):
     predicted_skills = label_encoder.inverse_transform([model.predict(vectorizer.transform([preprocessed_text]))[0]])
 
-    if len(predicted_skills) == 1:
-        skill_str = str(predicted_skills[0])
-    else:
-        skill_str = ', '.join(map(str, predicted_skills))
+    skill_list = []
+    for skill_index in predicted_skills:
+        skill_list.append(label_encoder.inverse_transform([skill_index])[0])
 
+    skill_str = ', '.join(skill_list)
     return skill_str
 
 st.title("Resume Skill Extractor")
@@ -76,3 +77,4 @@ if st.button("Extract skills"):
     predicted_skills = extract_skills_from_text(preprocessed_text, label_encoder)
 
     st.write("Predicted Skills:", predicted_skills)
+

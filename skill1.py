@@ -5,7 +5,6 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-import numpy as np
 
 # Load the model
 with open('skillmodel.pkl', 'rb') as model_file:
@@ -67,9 +66,8 @@ if st.button("Extract skills"):
         def extract_skills_from_text(preprocessed_text):
             prep_array = vectorizer.transform([preprocessed_text])
             predictions = model.predict(prep_array)
+            # Map class indices to skill labels
             result = label_encoder.inverse_transform(predictions)
-            # Convert NumPy int64 to string
-            result = [str(skill) for skill in result]
             return result
 
         prep = preprocess_text(user_input)

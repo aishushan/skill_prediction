@@ -65,19 +65,13 @@ if st.button("Extract skills"):
 
         def extract_skills_from_text(preprocessed_text):
             prep_array = vectorizer.transform([preprocessed_text])
-            print("Preprocessed Array Shape:", prep_array.shape)  # Debugging
             predictions = model.predict(prep_array)
-            print("Raw Predictions:", predictions)  # Debugging
             # Map class indices to skill labels
-            result = label_encoder.inverse_transform(predictions)
-            return result
+            predicted_skills = label_encoder.inverse_transform(predictions)
+            return predicted_skills
 
         prep = preprocess_text(user_input)
-        print("Preprocessed Text:", prep)  # Debugging
         predicted_skills = extract_skills_from_text(prep)
 
-        # Convert elements in predicted_skills to strings
-        predicted_skills = [str(skill) for skill in predicted_skills]
-
         # Display output
-        st.write("Predicted Skills:", ', '.join(predicted_skills))
+        st.write("Extracted Skills:", ', '.join(predicted_skills))

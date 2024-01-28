@@ -44,8 +44,11 @@ def extract_skills_from_text(preprocessed_text):
 def main():
     st.title("Skill Extraction App")
 
+    # Example resume text
+    example_resume = "I am good at python, machine learning."
+
     # User input for resume text
-    resume_text = st.text_area("Paste your resume here:")
+    resume_text = st.text_area("Paste your resume here:", value=example_resume)
 
     if st.button("Extract Skills"):
         # Preprocess the input text

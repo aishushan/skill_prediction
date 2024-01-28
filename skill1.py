@@ -1,7 +1,4 @@
 import streamlit as st
-import pickle
-import logging
-import streamlit as st
 import pandas as pd
 import pickle
 from sklearn.feature_extraction.text import CountVectorizer
@@ -10,14 +7,13 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-logging.basicConfig(level=logging.DEBUG)  # Enable logging
 
 # Load the model, vectorizer, and label encoder
 with open('skillmodel.pkl', 'rb') as model_file:
   model = pickle.load(model_file)
 with open('vectorizer.pkl', 'rb') as vectorizer_file:
   vectorizer = pickle.load(vectorizer_file)
-with open('label_encoder.pkl', 'rb') as label_encoder_file:
+with open('label_encoder (1).pkl', 'rb') as label_encoder_file:
   label_encoder = pickle.load(label_encoder_file)
 
 # Preprocessing function (replace with your implementation)
@@ -59,17 +55,15 @@ def preprocess_text(text):
   processed_text = ' '.join(tokens)
 
   return processed_text
-def extract_skills_from_text(preprocessed_text, label_encoder):
-    predicted_indices = model.predict(vectorizer.transform([preprocessed_text]))[0]
-    logging.debug("Predicted indices: %s", predicted_indices)
 
-    predicted_skills = label_encoder.inverse_transform(predicted_indices)
-    logging.debug("Predicted skills (before joining): %s", predicted_skills)
+
+def extract_skills_from_text(preprocessed_text, label_encoder):
+    predicted_skills = label_encoder.inverse_transform([model.predict(vectorizer.transform([preprocessed_text]))[0]])
 
     skill_list = []
     for skill_index in predicted_skills:
         skill_name = label_encoder.inverse_transform([skill_index])[0]
-        skill_list.append(str(skill_name))
+        skill_list.append(str(skill_name))  # Convert to string
 
     skill_str = ', '.join(skill_list)
     return skill_str
@@ -85,3 +79,4 @@ if st.button("Extract skills"):
     predicted_skills = extract_skills_from_text(preprocessed_text, label_encoder)
 
     st.write("Predicted Skills:", predicted_skills)
+

@@ -10,6 +10,10 @@ from nltk.stem import WordNetLemmatizer
 
 st.title("Resume Skill Classifier")
 
+# Assuming skillsdata.csv is in the same directory as your script
+skills_data_path = 'C:\Users\Aiswarya\OneDrive\Desktop\DEPLOYMENT\intern prjct\skillsdata.csv'
+st.session_state.skills_data = pd.read_csv(skills_data_path)
+
 with open('skillmodel.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
 
@@ -80,10 +84,11 @@ if st.button("Extract skills"):
             
         prep = preprocess_text(user_input)
         # Vectorize the preprocessed text using the same vectorizer
+        vectorizer = CountVectorizer()
         X_input = vectorizer.transform([prep])
         predictions = model.predict(X_input)
         # Extract skills from the preprocessed text
-        extracted_skills = extract_skills_from_text(prep, skills_data['SKILLS'])
+        extracted_skills = extract_skills_from_text(prep, st.session_state.skills_data['SKILLS'])
         # Remove duplicates from the extracted skills
         result = remove_duplicates(extracted_skills)
         # Display output

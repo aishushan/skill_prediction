@@ -57,7 +57,7 @@ def preprocess_text(text):
     return processed_text
 
 def extract_skills_from_text(preprocessed_text, skills_data):
-    """Extracts skills from preprocessed text based on a skills dataset."""
+    """Extracts skills from preprocessed text based on a skills dataset, removing duplicates."""
 
     extracted_skills = []
 
@@ -65,7 +65,11 @@ def extract_skills_from_text(preprocessed_text, skills_data):
         if skill in preprocessed_text:
             extracted_skills.append(skill)
 
+    # Remove duplicates while preserving order
+    extracted_skills = list(OrderedDict.fromkeys(extracted_skills))
+
     return extracted_skills
+
 
 # Create the Streamlit app
 st.title("Resume Skills Extractor")

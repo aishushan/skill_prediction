@@ -6,7 +6,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from collections import OrderedDict 
+from collections import OrderedDict
+from PyPDF2 import PdfReader
 
 # Load the saved model, vectorizer, and label encoder
 with open('skillmodel.pkl', 'rb') as model_file:
@@ -18,7 +19,7 @@ with open('label_encoder (1).pkl', 'rb') as label_encoder_file:
 
 # Load the skills dataset
 skills_data = pd.read_csv('C:/Users/Aiswarya/OneDrive/Desktop/DEPLOYMENT/intern prjct/skillsdata.csv')
-skills_data['SKILLS'] = skills_data['SKILLS'].str.lower()  # Optional
+skills_data['SKILLS'] = skills_data['SKILLS'].str.lower()
 
 def preprocess_text(text):
     """Preprocesses text for skill extraction."""
@@ -57,6 +58,7 @@ def preprocess_text(text):
 
     return processed_text
 
+
 def extract_skills_from_text(preprocessed_text, skills_data):
     """Extracts skills from preprocessed text based on a skills dataset, removing duplicates."""
 
@@ -70,18 +72,22 @@ def extract_skills_from_text(preprocessed_text, skills_data):
     extracted_skills = list(OrderedDict.fromkeys(extracted_skills))
 
     return extracted_skills
-
-
 # Create the Streamlit app
 st.title("Resume Skills Extractor")
 
-# Input text area for resume
-resume_text = st.text_area("Enter resume text:")
+# Upload PDF file option
+uploaded_file = st.file_uploader("Upload your resume (PDF):", type=['pdf'])
 
-# Button to trigger skill extraction
-if st.button("Extract Skills"):
-    # Preprocess the text
-    processed_text = preprocess_text(resume_text)
+if uploaded_file:
+    # Extract text from the uploaded PDF
+    with open(uploaded_file, 'rb') as f:
+        reader = PdfReader(f)
+        page_text = ''
+        for page in reader.pages:
+            page_text += page.extractText()
+
+    # Preprocess the extracted text
+    processed_text = preprocess_text(page_text)
 
     # Vectorize the text
     X_new_data = vectorizer.transform([processed_text])
@@ -95,3 +101,10 @@ if st.button("Extract Skills"):
     # Display the extracted skills
     st.write("Extracted Skills:")
     st.write(", ".join(extracted_skills))
+
+# Text area option (keep for alternative input)
+elif resume_text:
+    # ... (your existing code for processing and displaying skills from text area)
+
+else:
+    st.write("Please upload a PDF file or paste your resume text in the text area.")

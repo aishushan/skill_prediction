@@ -91,8 +91,5 @@ if st.button("Extract skills"):
         predicted_skills = label_encoder.inverse_transform(predictions)
         result = remove_duplicates(predicted_skills.tolist())
 
-        # Convert predicted skills to strings
-        result = [str(skill) for skill in result]
-
         # Display output
         st.write("Predicted Skills:", ', '.join(result))

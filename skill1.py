@@ -2,20 +2,19 @@ import streamlit as st
 import pickle
 import re
 import nltk
+import numpy as np
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-import numpy as np  # Import numpy for array operations
 
 st.title("Resume Skill Classifier")
 
-# Load the vectorizer used during training
-with open('vectorizer.pkl', 'rb') as vectorizer_file:
-    vectorizer = pickle.load(vectorizer_file)
-
-# Load the Naive Bayes model used during training
+# Load the model and vectorizer
 with open('skillmodel.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
+
+with open('vectorizer.pkl', 'rb') as vectorizer_file:
+    vectorizer = pickle.load(vectorizer_file)
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -65,12 +64,13 @@ if st.button("Extract skills"):
             return processed_text
 
         def extract_skills_from_text(preprocessed_text, model, vectorizer):
-    # Vectorize the preprocessed text using the loaded vectorizer
+            # Vectorize the preprocessed text using the loaded vectorizer
             prep_array = vectorizer.transform([' '.join(preprocessed_text)])
-    # Make predictions on the new data using the loaded model
+            # Make predictions on the new data using the loaded model
             probabilities = model.predict_proba(prep_array)
             predicted_class = np.argmax(probabilities)
-            return [predicted_class]
+            predicted_skill = f"Skill {predicted_class}"  # You can customize this based on your actual skill labels
+            return [predicted_skill]
 
         def remove_duplicates(lst):
             return list(set(lst))
@@ -79,4 +79,4 @@ if st.button("Extract skills"):
         predictions = extract_skills_from_text(prep, model, vectorizer)
         result = remove_duplicates(predictions)
         # Display output
-        st.write("Predicted Skills:", result)
+        st.write("Predicted Skills:", ', '.join(result))

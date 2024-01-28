@@ -1,28 +1,35 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Jan 28 14:30:09 2024
+
+@author: Lenovo
+"""
+
 import streamlit as st
-import pandas as pd
 import pickle
-from sklearn.feature_extraction.text import CountVectorizer
 import re
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from sklearn.naive_bayes import MultinomialNB
+
 
 st.title("Resume Skill Classifier")
 
-# Assuming skillsdata.csv is in the same directory as your script
-skills_data_path = 'C:\Users\Aiswarya\OneDrive\Desktop\DEPLOYMENT\intern prjct\skillsdata.csv'
-st.session_state.skills_data = pd.read_csv(skills_data_path)
-
 with open('skillmodel.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
+
 
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
+
+ 
 # User input: resume text
 user_input = st.text_area("Paste your resume text here:")
+
 
 if st.button("Extract skills"):
     if user_input:
@@ -76,20 +83,20 @@ if st.button("Extract skills"):
             return extracted_skills
         
         def remove_duplicates(lst):
+            
             unique_list = []
+            
             for item in lst:
-                if item not in unique_list:
-                    unique_list.append(item)
+              if item not in unique_list:
+                unique_list.append(item)
+
             return unique_list
             
         prep = preprocess_text(user_input)
-        # Vectorize the preprocessed text using the same vectorizer
-        vectorizer = CountVectorizer()
-        X_input = vectorizer.transform([prep])
-        predictions = model.predict(X_input)
-        # Extract skills from the preprocessed text
-        extracted_skills = extract_skills_from_text(prep, st.session_state.skills_data['SKILLS'])
-        # Remove duplicates from the extracted skills
-        result = remove_duplicates(extracted_skills)
+        predictions = model.predict(prep)
+        result = remove_duplicates(predictions)
         # Display output
         st.write("Predicted Skills:", result)
+
+    
+    

@@ -104,3 +104,25 @@ if uploaded_file:
         st.write(", ".join(extracted_skills))
 
     except Exception as e:
+        st.error("Error processing PDF: {}".format(e))
+        
+else:
+    # Text area input for manual resume text entry
+    resume_text = st.text_area("Enter resume text:")
+
+    if st.button("Extract Skills"):
+        # Preprocess the text
+        processed_text = preprocess_text(resume_text)
+
+        # Vectorize the text
+        X_new_data = vectorizer.transform([processed_text])
+
+        # Make predictions
+        predictions = model.predict(X_new_data)
+
+        # Extract skills from the text based on predictions
+        extracted_skills = extract_skills_from_text(processed_text, skills_data['SKILLS'])
+
+        # Display the extracted skills
+        st.write("Extracted Skills:")
+        st.write(", ".join(extracted_skills))       

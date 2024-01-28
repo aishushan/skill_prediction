@@ -1,7 +1,6 @@
 import streamlit as st
 import pickle
 import re
-import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -55,9 +54,6 @@ if st.button("Extract skills"):
             }
             tokens = [contractions.get(word, word) for word in tokens]
 
-            # Removing HTML tags
-            tags_removed = re.sub(r'<.*?>', '', ' '.join(tokens))
-
             # Joining tokens back into a sentence
             processed_text = ' '.join(tokens)
 
@@ -74,4 +70,4 @@ if st.button("Extract skills"):
         predicted_skills = extract_skills_from_text(prep)
 
         # Display output
-        st.write("Predicted Skills:", ', '.join(map(str, predicted_skills)))
+        st.write("Extracted Skills:", ', '.join(map(str, predicted_skills)))

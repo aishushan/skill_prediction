@@ -5,7 +5,6 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-import pandas as pd
 
 # Load the model
 with open('skillmodel.pkl', 'rb') as model_file:
@@ -18,9 +17,6 @@ with open('vectorizer.pkl', 'rb') as vectorizer_file:
 # Load the label encoder
 with open('label_encoder.pkl', 'rb') as label_encoder_file:
     label_encoder = pickle.load(label_encoder_file)
-
-# Load your skills data
-skills_data = pd.read_csv('/content/drive/MyDrive/kaggle/skillsdata.csv')
 
 st.title("Resume Skill Extractor")
 
@@ -67,20 +63,15 @@ if st.button("Extract skills"):
 
             return processed_text
 
-        def extract_skills_from_text(preprocessed_text, skills_data):
-
-            # Initialize an empty list to store extracted skills
-            extracted_skills = []
-
-            # Check for each skill in the preprocessed text
-            for skill in skills_data['SKILLS']:
-                if skill in preprocessed_text.lower():
-                    extracted_skills.append(skill)
-
-            return extracted_skills
+        def extract_skills_from_text(preprocessed_text):
+            prep_array = vectorizer.transform([preprocessed_text])
+            predictions = model.predict(prep_array)
+            # Convert class indices to skill labels using label_encoder.classes_
+            predicted_skills = label_encoder.inverse_transform(predictions)
+            return predicted_skills
 
         prep = preprocess_text(user_input)
-        predicted_skills = extract_skills_from_text(prep, skills_data)
+        predicted_skills = extract_skills_from_text(prep)
 
         # Display output
-        st.write("Extracted Skills:", ', '.join(map(str, predicted_skills)))
+        st.write("Predicted Skills:", ', '.join(map(str, predicted_skills)))

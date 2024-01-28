@@ -13,9 +13,6 @@ st.title("Resume Skill Classifier")
 with open('skillmodel.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
 
-# Load the vectorizer used during training
-with open('vectorizer.pkl', 'rb') as vectorizer_file:
-    vectorizer = pickle.load(vectorizer_file)
 
 nltk.download('punkt')
 nltk.download('stopwords')

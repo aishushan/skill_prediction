@@ -56,12 +56,14 @@ def preprocess_text(text):
 
   return processed_text
 
+
 def extract_skills_from_text(preprocessed_text, label_encoder):
     predicted_skills = label_encoder.inverse_transform([model.predict(vectorizer.transform([preprocessed_text]))[0]])
 
     skill_list = []
     for skill_index in predicted_skills:
-        skill_list.append(label_encoder.inverse_transform([skill_index])[0])
+        skill_name = label_encoder.inverse_transform([skill_index])[0]
+        skill_list.append(str(skill_name))  # Convert to string
 
     skill_str = ', '.join(skill_list)
     return skill_str

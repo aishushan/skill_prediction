@@ -6,6 +6,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from collections import OrderedDict 
 
 # Load the saved model, vectorizer, and label encoder
 with open('skillmodel.pkl', 'rb') as model_file:

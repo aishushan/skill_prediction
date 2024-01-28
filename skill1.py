@@ -8,6 +8,7 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from collections import OrderedDict
 from PyPDF2 import PdfReader
+import io
 
 # Load the saved model, vectorizer, and label encoder
 with open('skillmodel.pkl', 'rb') as model_file:
@@ -84,9 +85,9 @@ if uploaded_file:
     try:
         # Extract text from the uploaded PDF
         with uploaded_file as f:
-            reader = PdfReader(f)
+            pdf_reader = PdfReader(f)
             page_text = ''
-            for page in reader.pages:
+            for page in pdf_reader.pages:
                 page_text += page.extractText()
 
         # Preprocess the extracted text

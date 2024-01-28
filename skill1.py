@@ -76,5 +76,8 @@ if st.button("Extract skills"):
         print("Preprocessed Text:", prep)  # Debugging
         predicted_skills = extract_skills_from_text(prep)
 
+        # Convert elements in predicted_skills to strings
+        predicted_skills = [str(skill) for skill in predicted_skills]
+
         # Display output
         st.write("Predicted Skills:", ', '.join(predicted_skills))

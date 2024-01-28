@@ -13,8 +13,10 @@ from nltk.stem import WordNetLemmatizer
 # Load the model and label encoder
 with open('skillmodel.pkl', 'rb') as model_file:
   model = pickle.load(model_file)
-with open('label_encoder.pkl', 'rb') as label_encoder_file:
+with open('label_encoder (1).pkl', 'rb') as label_encoder_file:
   label_encoder = pickle.load(label_encoder_file)
+with open('vectorizer.pkl', 'rb') as vectorizer_file:
+  vectorizer = pickle.load(vectorizer_file)
 
 # Preprocessing function (you can use your existing function here)
 def preprocess_text(text):

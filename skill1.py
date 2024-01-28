@@ -68,10 +68,10 @@ if st.button("Extract skills"):
             predictions = model.predict(prep_array)
             # Map class indices to skill labels
             predicted_skills = label_encoder.inverse_transform(predictions)
-            return predicted_skills
+            return predicted_skills.tolist()  # Convert to a list
 
         prep = preprocess_text(user_input)
         predicted_skills = extract_skills_from_text(prep)
 
         # Display output
-        st.write("Extracted Skills:", ', '.join(predicted_skills))
+        st.write("Extracted Skills:", predicted_skills)

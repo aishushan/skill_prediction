@@ -65,11 +65,12 @@ if st.button("Extract skills"):
             return processed_text
 
         def extract_skills_from_text(preprocessed_text, model, vectorizer):
-            # Vectorize the preprocessed text using the loaded vectorizer
+    # Vectorize the preprocessed text using the loaded vectorizer
             prep_array = vectorizer.transform([' '.join(preprocessed_text)])
-            # Make predictions on the new data using the loaded model
-            predictions = model.predict(prep_array)
-            return predictions.tolist()
+    # Make predictions on the new data using the loaded model
+            probabilities = model.predict_proba(prep_array)
+            predicted_class = np.argmax(probabilities)
+            return [predicted_class]
 
         def remove_duplicates(lst):
             return list(set(lst))

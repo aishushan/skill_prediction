@@ -7,7 +7,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from collections import OrderedDict
-from PyPDF2 import PdfReader
+import fitz  # PyMuPDF
 import io
 
 # Load the saved model, vectorizer, and label encoder
@@ -74,9 +74,20 @@ def extract_skills_from_text(preprocessed_text, skills_data):
     extracted_skills = list(OrderedDict.fromkeys(extracted_skills))
 
     return extracted_skills
-
 # Create the Streamlit app
 st.title("Resume Skills Extractor")
+
+# Function to extract text from PDF
+def extract_text_from_pdf(pdf_content):
+    text = ""
+    try:
+        with fitz.open("pdf", pdf_content) as pdf_document:
+            for page_number in range(pdf_document.page_count):
+                page = pdf_document[page_number]
+                text += page.get_text()
+    except Exception as e:
+        st.error(f"Error extracting text from PDF: {e}")
+    return text
 
 # Upload PDF file option
 uploaded_file = st.file_uploader("Upload your resume (PDF):", type=['pdf'])
@@ -84,11 +95,8 @@ uploaded_file = st.file_uploader("Upload your resume (PDF):", type=['pdf'])
 if uploaded_file:
     try:
         # Extract text from the uploaded PDF
-        with uploaded_file as f:
-            pdf_reader = PdfReader(f)
-            page_text = ''
-            for page in pdf_reader.pages:
-                page_text += page.extractText()
+        pdf_content = uploaded_file.read()
+        page_text = extract_text_from_pdf(pdf_content)
 
         # Preprocess the extracted text
         processed_text = preprocess_text(page_text)

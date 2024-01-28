@@ -1,7 +1,7 @@
-import pandas as pd
-import pickle
 import streamlit as st
+import pandas as pd
 import re
+import pickle
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
@@ -9,12 +9,13 @@ from nltk.stem import WordNetLemmatizer
 from collections import OrderedDict
 from PyPDF2 import PdfReader
 
-
 # Load the saved model, vectorizer, and label encoder
 with open('skillmodel.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
+
 with open('vectorizer.pkl', 'rb') as vectorizer_file:
     vectorizer = pickle.load(vectorizer_file)
+
 with open('label_encoder (1).pkl', 'rb') as label_encoder_file:
     label_encoder = pickle.load(label_encoder_file)
 
@@ -82,7 +83,7 @@ uploaded_file = st.file_uploader("Upload your resume (PDF):", type=['pdf'])
 if uploaded_file:
     try:
         # Extract text from the uploaded PDF
-        with open(uploaded_file, 'rb') as f:
+        with uploaded_file as f:
             reader = PdfReader(f)
             page_text = ''
             for page in reader.pages:
@@ -104,10 +105,9 @@ if uploaded_file:
         st.write("Extracted Skills:")
         st.write(", ".join(extracted_skills))
 
-     except Exception as e:
-        st.error("Error processing PDF: {}".format(e)) 
+    except Exception as e:
+        st.error("Error processing PDF: {}".format(e))
 
-        
 else:
     # Text area input for manual resume text entry
     resume_text = st.text_area("Enter resume text:")
@@ -127,4 +127,4 @@ else:
 
         # Display the extracted skills
         st.write("Extracted Skills:")
-        st.write(", ".join(extracted_skills))       
+        st.write(", ".join(extracted_skills))
